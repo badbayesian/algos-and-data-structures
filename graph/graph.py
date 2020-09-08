@@ -8,27 +8,39 @@ from graph.search import SearchMixin
 class Graph(SearchMixin):
     """Graph data structure with building methods.
 
-    With weighted nodes and edges (defaults 0 and 1 repectively).
-    Edges stored in dictionaries."""
+    Potential graph types include simple and weighted.
+    Nodes are stored in a dict.
+    Edges are stored in nested dictionaries."""
 
     def __init__(self, graph_type: str = "weighted") -> None:
-        self.nodes = {}
-        self.edges = defaultdict(dict)
-
         possible_graphs = ["simple", "weighted"]
         if graph_type not in possible_graphs:
             raise TypeError(
                 f"{graph_type} is not a valid graph type. Use {possible_graphs}."
             )
+
+        self.nodes = {}
+        self.edges = defaultdict(dict)
         self.graph_type = graph_type
 
     def __repr__(self) -> str:
-        nodes = "".join(
-            [f"{node}: {weight}\n" for (node, weight) in self.nodes.items()]
-        )
-        output = f"Nodes:\n{nodes}\nEdges:\n"
-        edges = "".join([f"{k}: {v}\n" for (k, v) in self.edges.items()])
-        return output + edges
+        if self.graph_type == "simple":
+            nodes = [node for node in self.nodes.keys()]
+            edges = "".join(
+                [
+                    f"{k}: {[e for e in v.keys()]}\n"
+                    for (k, v) in self.edges.items()
+                ]
+            )
+        elif self.graph_type == "weighted":
+            nodes = "".join(
+                [
+                    f"{node}: {weight}\n"
+                    for (node, weight) in self.nodes.items()
+                ]
+            )
+            edges = "".join([f"{k}: {v}\n" for (k, v) in self.edges.items()])
+        return f"Nodes:\n{nodes}\nEdges:\n{edges}"
 
     def __eq__(self, other: Graph) -> bool:
         if self.nodes != other.nodes:
@@ -38,8 +50,13 @@ class Graph(SearchMixin):
     def __len__(self) -> int:
         return len(self.nodes)
 
-    def __and__(self, other: Graph, verbose: bool = False) -> Graph:
-        """Adds."""
+    def __add__(self, other: Graph, verbose=True) -> Graph:
+        """Combines graphs and adds weights of nodes and edges."""
+        if verbose and (
+            self.graph_type == "simple" or other.graph_type == "simple"
+        ):
+            raise TypeError("Use and for combining simple graphs.")
+
         new_graph = Graph(self.graph_type)
         new_graph.nodes = {**self.nodes, **other.nodes}
         for node, edge in self.edges.items():
@@ -50,8 +67,10 @@ class Graph(SearchMixin):
 
         return new_graph
 
-    def __add__(self, other: Graph) -> Graph:
-        return self.__and__(other)
+    __radd__ = __add__
+
+    def __and__(self, other: Graph) -> Graph:
+        return self.__radd__(other)
 
     def __sub__(self, other: Graph) -> Graph:
         """Subtract edges from self as defined by other."""
@@ -76,8 +95,10 @@ class Graph(SearchMixin):
         """Add edges to existing nodes in graph."""
         if node_a not in self.nodes:
             self.nodes[node_a] = 0
+            self.edges[node_a] = {}
         if node_b not in self.nodes:
             self.nodes[node_b] = 0
+            self.edges[node_b] = {}
 
         self.edges[node_a][node_b] = weight_a
 
@@ -120,10 +141,15 @@ class Graph(SearchMixin):
         complete_graph = complete(len(self))
         return complete_graph - self
 
+    __invert__ = complement
+
 
 def complete(size: int, graph_type="weighted") -> Graph:
     """Creates complete graph."""
     graph = Graph(graph_type)
+    if size == 1:
+        graph.add_node({0: 0})
+        return graph
     _ = [
         graph.add_edge(a, b)
         for a in range(size)

@@ -19,7 +19,7 @@ def test_build_complete_graph():
     assert g == h
 
 
-def test_add():
+def test_simple_and():
     g = graph.Graph()
     h = graph.Graph()
     i = graph.Graph()
@@ -30,7 +30,15 @@ def test_add():
     h.add_node({1: 10})
     i.add_node({1: 10})
 
-    assert g + h == i
+    assert (g + h) == i and (h + g) == i
+
+
+def test_simple_reverse():
+    g = graph.Graph()
+    g.add_edge(0, 1)
+    h = graph.Graph()
+    h.add_edge(1, 0)
+    assert g == h.reverse()
 
 
 def test_reverse_on_complete():
@@ -72,4 +80,4 @@ def test_remove_all_edges():
 
 
 if __name__ == "__main__":
-    test_complement_on_complete()
+    pass
