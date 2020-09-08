@@ -36,6 +36,7 @@ class SearchMixin:
         return dist, prev
 
     def bellman_ford(self, source):
+        """Bellman-Ford algorithm."""
         dist = {source: 0}
         prev = {}
         for node in self.nodes:

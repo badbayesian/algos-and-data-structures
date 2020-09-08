@@ -11,7 +11,7 @@ setuptools.setup(
     description="Classic algorithms and Data Structures",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/badbayesian/algos-and-data-structures",
+    url="https://github.com/badbayesian/bbads",
     packages=setuptools.find_packages(),
     classifiers=["MIT License"],
     python_requires=">=3.7",
