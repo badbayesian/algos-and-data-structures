@@ -1,4 +1,4 @@
-![Build Status](https://github.com/badbayesian/bbads/workflows/bbads/badge.svg)
+![bbads](https://github.com/badbayesian/bbads/workflows/bbads/badge.svg)
 # Classic Algorithms and Data Structures in python
 Practicing for job interviews
 

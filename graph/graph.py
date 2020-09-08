@@ -1,6 +1,6 @@
 """Graph"""
 from __future__ import annotations
-from typing import Dict
+from typing import Dict, Any
 from collections import defaultdict
 from graph.search import SearchMixin
 
