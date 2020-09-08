@@ -62,6 +62,8 @@ class Graph(SearchMixin):
             for node_b, weight in edge.items():
                 if node_b not in other.edges[node_a]:
                     new_graph.edges[node_a][node_b] = weight
+                else:
+                    new_graph.edges[node_a] = {}
 
         return new_graph
 

@@ -30,10 +30,6 @@ def test_add():
     h.add_node({1: 10})
     i.add_node({1: 10})
 
-    print("g", g)
-    print("h", h)
-    print("i", i)
-    print("sum", g + h)
     assert g + h == i
 
 
@@ -41,6 +37,15 @@ def test_reverse_on_complete():
     g = graph.complete(N)
     h = g.reverse()
     assert g == h
+
+
+def test_complement_on_complete():
+    g = graph.complete(N)
+    h = graph.Graph()
+    for i in range(N):
+        h.add_node({i: 0})
+
+    assert g.complement() == h
 
 
 def test_remove_all_nodes():
@@ -67,4 +72,4 @@ def test_remove_all_edges():
 
 
 if __name__ == "__main__":
-    test_add()
+    test_complement_on_complete()
