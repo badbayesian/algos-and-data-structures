@@ -77,7 +77,3 @@ def test_remove_all_edges():
         h.add_node({i: 0})
 
     assert g == h
-
-
-if __name__ == "__main__":
-    pass
