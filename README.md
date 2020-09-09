@@ -3,11 +3,24 @@
 Practicing for job interviews
 
 ## Graphs
-i- [x] Basic building blocks
+- [x] Basic building blocks
+    - [x] add/remove nodes
+    - [x] add/remove edges
+    - [x] complete
+    - [x] reverse
+    - [x] complement
 - [  ] Operations with Dunder methods
     - [  ] simple
-    - [x] weighted
+    - [  ] weighted
 - [  ] Searching
+    - [  ] BFS
+    - [  ] DFS
     - [x] Dijkstra
     - [  ] BF
+- [  ] Connectivity
+    - [  ] edge cut
+    - [  ] vertex cut
 - [  ] Flows
+    - [  ] FF
+    - [  ] EK
+    - [  ] Dinic
