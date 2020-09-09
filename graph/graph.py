@@ -101,6 +101,8 @@ class Graph(SearchMixin):
             self.edges[node_b] = {}
 
         self.edges[node_a][node_b] = weight_a
+        if self.graph_type == "weighted":
+            self.edges[node_b][node_a] = weight_a
 
     def remove_node(self, node: Any) -> None:
         """Removes node from graph."""

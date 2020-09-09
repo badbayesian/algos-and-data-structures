@@ -3,11 +3,11 @@
 Practicing for job interviews
 
 ## Graphs
-- [x] Basic building blocks
+i- [x] Basic building blocks
 - [  ] Operations with Dunder methods
     - [  ] simple
     - [x] weighted
 - [  ] Searching
-    - [  ] Dijkstra
+    - [x] Dijkstra
     - [  ] BF
 - [  ] Flows
