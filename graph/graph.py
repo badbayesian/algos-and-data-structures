@@ -1,7 +1,8 @@
 """Graph"""
 from __future__ import annotations
 from typing import Dict, Any
-from collections import defaultdict
+from collections import defaultdict, Counter
+from itertools import chain
 from graph.search import SearchMixin
 
 
@@ -25,7 +26,7 @@ class Graph(SearchMixin):
 
     def __repr__(self) -> str:
         if self.graph_type == "simple":
-            nodes = [node for node in self.nodes.keys()]
+            nodes = str([node for node in self.nodes.keys()]) + "\n"
             edges = "".join(
                 [
                     f"{k}: {[e for e in v.keys()]}\n"
@@ -58,19 +59,34 @@ class Graph(SearchMixin):
             raise TypeError("Use and for combining simple graphs.")
 
         new_graph = Graph(self.graph_type)
-        new_graph.nodes = {**self.nodes, **other.nodes}
-        for node, edge in self.edges.items():
-            new_graph.edges[node] = edge
+        new_graph.nodes = {
+            k: self.nodes.get(k, 0) + other.nodes.get(k, 0)
+            for k in set(self.nodes) | set(other.nodes)
+        }
 
-        for node, edge in other.edges.items():
-            new_graph.edges[node] = edge
-
+        for node, edge in chain(self.edges.items(), other.edges.items()):
+            new_graph.edges[node] = {
+                k: self.edges[node].get(k, 0) + other.edges[node].get(k, 0)
+                for k in set(self.edges[node]) | set(other.edges[node])
+            }
         return new_graph
 
     __radd__ = __add__
 
     def __and__(self, other: Graph) -> Graph:
-        return self.__radd__(other)
+        new_graph = Graph(self.graph_type)
+        new_graph.nodes = {**self.nodes, **other.nodes}
+        for node, edge in chain(other.edges.items(), self.edges.items()):
+            new_graph.edges[node].update(edge)
+        return new_graph
+
+    __rand__ = __and__
+
+    def __or__(self, other: Graph) -> Graph:
+        raise NotImplementedError
+
+    def __xor__(self, other: Graph) -> Graph:
+        raise NotImplementedError
 
     def __sub__(self, other: Graph) -> Graph:
         """Subtract edges from self as defined by other."""
@@ -86,12 +102,16 @@ class Graph(SearchMixin):
 
         return new_graph
 
+    __rsub__ = __sub__
+
     def add_node(self, node: Dict) -> None:
         """Add node to graph."""
         self.nodes.update(node)
         _ = [self.edges[k].update() for k in node]
 
-    def add_edge(self, node_a, node_b, weight_a=1) -> None:
+    def add_edge(
+        self, node_a, node_b, weight=1, both_directions=False
+    ) -> None:
         """Add edges to existing nodes in graph."""
         if node_a not in self.nodes:
             self.nodes[node_a] = 0
@@ -100,9 +120,9 @@ class Graph(SearchMixin):
             self.nodes[node_b] = 0
             self.edges[node_b] = {}
 
-        self.edges[node_a][node_b] = weight_a
-        if self.graph_type == "weighted":
-            self.edges[node_b][node_a] = weight_a
+        self.edges[node_a][node_b] = weight
+        if self.graph_type == "weighted" and both_directions:
+            self.edges[node_b][node_a] = weight
 
     def remove_node(self, node: Any) -> None:
         """Removes node from graph."""
@@ -130,7 +150,7 @@ class Graph(SearchMixin):
         """Updates edge weight."""
         self.edges[node_a][node_b] = new_weight
 
-    def reverse(self) -> Graph:
+    def __reversed__(self) -> Graph:
         """Returns a copy that is the reverse graph."""
         r_graph = Graph(self.graph_type)
         for node_a, edge in self.edges.items():
@@ -138,6 +158,9 @@ class Graph(SearchMixin):
             for node_b, weight in edge.items():
                 r_graph.edges[node_b][node_a] = weight
         return r_graph
+
+    def __contains__(self, query: Any) -> bool:
+        raise NotImplementedError
 
     def complement(self) -> Graph:
         complete_graph = complete(len(self))
