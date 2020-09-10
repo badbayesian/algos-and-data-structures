@@ -38,12 +38,12 @@ def test_simple_reverse():
     g.add_edge(0, 1)
     h = graph.Graph()
     h.add_edge(1, 0)
-    assert g == h.reverse()
+    assert g == reversed(h)
 
 
 def test_reverse_on_complete():
     g = graph.complete(N)
-    h = g.reverse()
+    h = reversed(g)
     assert g == h
 
 
