@@ -71,28 +71,38 @@ class Graph(SearchMixin):
             }
         return new_graph
 
-    __radd__ = __add__
+    def __or__(self, other: Graph) -> Graph:
+        new_graph = Graph(self.graph_type)
+        new_graph.nodes = {**self.nodes, **other.nodes}
+        new_graph.edges = {
+            i: dict(self.edges[i].items() | other.edges[i].items())
+            for i in new_graph.nodes
+        }
+        return new_graph
 
     def __and__(self, other: Graph) -> Graph:
         new_graph = Graph(self.graph_type)
-        new_graph.nodes = {**self.nodes, **other.nodes}
-        for node, edge in chain(other.edges.items(), self.edges.items()):
-            new_graph.edges[node].update(edge)
+        new_graph.nodes = dict(self.nodes.items() & other.nodes.items())
+        new_graph.edges = {
+            i: dict(self.edges[i].items() & other.edges[i].items())
+            for i in new_graph.nodes
+        }
         return new_graph
 
-    __rand__ = __and__
-
-    def __or__(self, other: Graph) -> Graph:
-        raise NotImplementedError
-
     def __xor__(self, other: Graph) -> Graph:
-        raise NotImplementedError
+        new_graph = Graph(self.graph_type)
+        new_graph.nodes = dict(self.nodes.items() ^ other.nodes.items())
+        new_graph.edges = {
+            i: dict(self.edges[i].items() ^ other.edges[i].items())
+            for i in new_graph.nodes
+        }
+        return new_graph
 
     def __sub__(self, other: Graph) -> Graph:
         """Subtract edges from self as defined by other."""
         ##TODO b inits all of a edges as a side effect
         new_graph = Graph(self.graph_type)
-        new_graph.nodes = self.nodes
+        new_graph.nodes = dict(self.nodes.items() ^ other.nodes.items())
         for node_a, edge in self.edges.items():
             for node_b, weight in edge.items():
                 if node_b not in other.edges[node_a]:
@@ -102,7 +112,11 @@ class Graph(SearchMixin):
 
         return new_graph
 
-    __rsub__ = __sub__
+    def __mult__(self, other: Graph) -> Graph:
+        raise NotImplementedError
+
+    def __matmul__(self, other: Graph) -> Graph:
+        raise NotImplementedError
 
     def add_node(self, node: Dict) -> None:
         """Add node to graph."""
