@@ -102,7 +102,7 @@ class Graph(SearchMixin):
         """Subtract edges from self as defined by other."""
         ##TODO b inits all of a edges as a side effect
         new_graph = Graph(self.graph_type)
-        new_graph.nodes = dict(self.nodes.items() ^ other.nodes.items())
+        new_graph.nodes = self.nodes
         for node_a, edge in self.edges.items():
             for node_b, weight in edge.items():
                 if node_b not in other.edges[node_a]:
