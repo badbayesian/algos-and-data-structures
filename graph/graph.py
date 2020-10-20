@@ -26,19 +26,13 @@ class Graph(SearchMixin):
 
     def __repr__(self) -> str:
         if self.graph_type == "simple":
-            nodes = str([node for node in self.nodes.keys()]) + "\n"
+            nodes = str(node for node in self.nodes.keys()) + "\n"
             edges = "".join(
-                [
-                    f"{k}: {[e for e in v.keys()]}\n"
-                    for (k, v) in self.edges.items()
-                ]
+                [f"{k}: {e for e in v.keys()}\n" for (k, v) in self.edges.items()]
             )
         elif self.graph_type == "weighted":
             nodes = "".join(
-                [
-                    f"{node}: {weight}\n"
-                    for (node, weight) in self.nodes.items()
-                ]
+                [f"{node}: {weight}\n" for (node, weight) in self.nodes.items()]
             )
             edges = "".join([f"{k}: {v}\n" for (k, v) in self.edges.items()])
         return f"Nodes:\n{nodes}\nEdges:\n{edges}"
@@ -53,9 +47,7 @@ class Graph(SearchMixin):
 
     def __add__(self, other: Graph, verbose=True) -> Graph:
         """Combines graphs and adds weights of nodes and edges."""
-        if verbose and (
-            self.graph_type == "simple" or other.graph_type == "simple"
-        ):
+        if verbose and (self.graph_type == "simple" or other.graph_type == "simple"):
             raise TypeError("Use and for combining simple graphs.")
 
         new_graph = Graph(self.graph_type)
@@ -64,7 +56,7 @@ class Graph(SearchMixin):
             for k in set(self.nodes) | set(other.nodes)
         }
 
-        for node, edge in chain(self.edges.items(), other.edges.items()):
+        for node, _ in chain(self.edges.items(), other.edges.items()):
             new_graph.edges[node] = {
                 k: self.edges[node].get(k, 0) + other.edges[node].get(k, 0)
                 for k in set(self.edges[node]) | set(other.edges[node])
@@ -100,7 +92,7 @@ class Graph(SearchMixin):
 
     def __sub__(self, other: Graph) -> Graph:
         """Subtract edges from self as defined by other."""
-        ##TODO b inits all of a edges as a side effect
+        # TODO b inits all of a edges as a side effect
         new_graph = Graph(self.graph_type)
         new_graph.nodes = self.nodes
         for node_a, edge in self.edges.items():
@@ -123,9 +115,7 @@ class Graph(SearchMixin):
         self.nodes.update(node)
         _ = [self.edges[k].update() for k in node]
 
-    def add_edge(
-        self, node_a, node_b, weight=1, both_directions=False
-    ) -> None:
+    def add_edge(self, node_a, node_b, weight=1, both_directions=False) -> None:
         """Add edges to existing nodes in graph."""
         if node_a not in self.nodes:
             self.nodes[node_a] = 0
@@ -146,7 +136,7 @@ class Graph(SearchMixin):
 
         self.edges.pop(node)
 
-        for node_a, edge in self.edges.items():
+        for _, edge in self.edges.items():
             edge.pop(node)
 
     def remove_edge(
@@ -177,6 +167,7 @@ class Graph(SearchMixin):
         raise NotImplementedError
 
     def complement(self) -> Graph:
+        """Complement of graph."""
         complete_graph = complete(len(self))
         return complete_graph - self
 
@@ -189,10 +180,5 @@ def complete(size: int, graph_type="weighted") -> Graph:
     if size == 1:
         graph.add_node({0: 0})
         return graph
-    _ = [
-        graph.add_edge(a, b)
-        for a in range(size)
-        for b in range(size)
-        if a != b
-    ]
+    _ = [graph.add_edge(a, b) for a in range(size) for b in range(size) if a != b]
     return graph
